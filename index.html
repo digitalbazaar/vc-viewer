@@ -1,0 +1,224 @@
+<html>
+  <head>
+    <title>Credential Viewer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.0/semantic.min.css" integrity="sha512-PwhgdrueUt7iVICnZMjYcbiLalCztrVfzUIYXekIK8hZu4DQP141GrKh6fUHmNERWi4bGdBXIZqtBZnsSzHEMg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.1.0/mustache.min.js" integrity="sha512-HYiNpwSxYuji84SQbCU5m9kHEsRqwWypXgJMBtbRSumlx1iBB6QaxgEBZHSHEGM+fKyCX/3Kb5V5jeVXm0OglQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module">
+      import { createApp } from 'https://unpkg.com/petite-vue?module'
+
+      window.app = createApp({
+
+        // local state
+        credential: {},
+        credentialString: "",
+        filename: "",
+        landscape: "",
+        landscapeSVG: "",
+        parseError: "",
+        currentTab: "rendered", // or 'code'
+
+        // methods
+        template() {
+          let template = '';
+          if ('renderMethod' in this.credential) {
+            template = atob(this.credential.renderMethod[0].url.split(';base64,')[1]);
+          }
+          return template;
+        },
+        rendering() {
+          return `data:image/svg+xml;base64,${btoa(this.renderingSVG())}`;
+        },
+        renderingSVG() {
+          const template = this.template();
+          if (template.length > 0) {
+            return Mustache.render(template, this.credential);
+          }
+        },
+        async renderings() {
+          //const resp = await fetch(this.credential.renderMethod[0].url);
+          const resp = this.credential.renderMethod[0].url;
+          //const template = await resp.text();
+          const rv = Mustache.render(template, this.credential.credentialSubject);
+          this.landscapeSVG = rv;
+          this.landscape = `data:image/svg+xml;base64,${btoa(rv)}`;
+        },
+        async pickFile() {
+          const [fileHandle] = await window.showOpenFilePicker();
+          this.filename = fileHandle.name;
+          const file = await fileHandle.getFile();
+          const text = await file.text();
+          try {
+            this.credentialString = text;
+            this.credential = JSON.parse(text);
+            this.parseError = "";
+          } catch(error) {
+            // TODO: error on selected files should be reported somewhere else
+            // ...and be blocking...
+            this.parseError = error.message;
+            console.error(error);
+          };
+        },
+        loadCredential(url) {
+          if (url) this.credentialUrl = url;
+          fetch(this.credentialUrl)
+            .then((r) => r.json())
+            .then((credential) => {
+              this.credential = credential;
+              this.renderings();
+            })
+            .catch(console.error);
+        },
+        getCredential($event) {
+          try {
+            this.credential = JSON.parse($event.target.value);
+            this.parseError = "";
+            this.renderings();
+          } catch(error) {
+            this.parseError = error.message;
+            console.error(error);
+          }
+        }
+      }).mount();
+    </script>
+    <style>
+      .ui.list .ui.list { border-left: 1px solid lightgray; }
+    </style>
+  </head>
+  <body>
+    <main class="ui basic segment">
+      <div class="ui two column grid">
+        <div class="column">
+          <div class="ui form">
+            <button class="ui button" @click="pickFile()">Choose Credential...</button>
+            <span v-text="filename"></span>
+            <div class="field">
+              <textarea v-model="credentialString" @input="getCredential" placeholder="Credential"></textarea>
+            </div>
+            <div class="ui error message" :class="{ visible: parseError.length > 0 }" v-text="parseError"></div>
+          </div>
+        </div>
+        <div class="column" v-if="template().length > 0">
+          <div class="ui top attached tabular menu">
+            <div class="item" :class="{ active: currentTab == 'rendered' }"
+              @click="currentTab = 'rendered'">Rendered Template</div>
+            <div class="item" :class="{ active: currentTab == 'code' }"
+              @click="currentTab = 'code'">SVG Template Code</div>
+          </div>
+          <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
+            <div class="ui massive image" v-html="renderingSVG()"></div>
+          </div>
+          <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
+            <div class="ui form">
+              <div class="field">
+                <textarea v-model="template()" placeholder="SVG Template"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="ui basic segment" v-if="'type' in credential">
+        <div class="ui bulleted horizontal list">
+          <div class="item">
+            <div class="content">
+              <div class="header">@context</div>
+            </div>
+          </div>
+          <a class="link item" v-for="(context) in credential['@context']" v-text="context" :href="context"></a>
+        </div>
+      </section>
+      <section class="ui basic segment">
+      <!-- Credential Images -->
+      <div class="ui three column divided grid" v-if="Object.keys(credential).length > 0">
+        <div class="column">
+          <div class="ui header">Credential</div>
+          <div class="ui list">
+            <div class="item" v-for="(value, key) in credential">
+              <template v-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) !== 'object'">
+                <div class="header" v-text="key"></div>
+                <div class="description" v-text="value"></div>
+              </template>
+              <template v-else-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) === 'object' && !Array.isArray(value)">
+                <div class="ui list">
+                  <div class="item" v-for="(v, k) in value">
+                    <template v-if="['@context', 'credentialSubject', 'issuer'].indexOf(k) === -1 && typeof(v) !== 'object'">
+                      <div class="header" v-text="k"></div>
+                      <div class="description" v-text="v"></div>
+                    </template>
+                  </div>
+                </div>
+              </template>
+              <template v-else-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
+                <div class="header" v-text="key"></div>
+                <div class="description">
+                  <div v-for="(element) in value">
+                    <div v-if="typeof(element) !== 'object'" v-text="element"></div>
+                    <div v-if="typeof(element) === 'object' && !Array.isArray(element)">
+                      <div class="ui list">
+                        <div class="item" v-for="(v, k) in element">
+                          <template v-if="typeof(v) !== 'object'">
+                            <div class="header" v-text="k"></div>
+                            <div class="description">
+                              <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                                <img :src="v" class="ui image">
+                              </div>
+                              <div v-else v-text="v"></div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="column" v-if="'credentialSubject' in credential">
+          <div class="ui header">Credential Subject</div>
+          <div class="ui list">
+            <div class="item" v-for="(value, key) in credential.credentialSubject">
+              <template v-if="['image'].indexOf(key) === -1 && typeof(value) !== 'object'">
+                <div class="header" v-text="key"></div>
+                <div class="description" v-text="value"></div>
+              </template>
+              <template v-else>
+                <div class="header" v-text="key"></div>
+                <div class="description">
+                  <div class="ui list">
+                    <div class="item" v-for="(v, k) in value">
+                      <template v-if="['image'].indexOf(k) === -1 && typeof(v) !== 'object'">
+                        <div class="header" v-text="k"></div>
+                        <div class="description">
+                          <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                            <img :src="v" class="ui image">
+                          </div>
+                          <div v-else v-text="v"></div>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="column" v-if="'issuer' in credential && typeof credential.issuer == 'object'">
+          <div class="ui header">Issuer</div>
+          <div class="ui list">
+            <div class="item" v-for="(v, k) in credential.issuer">
+              <div class="header" v-text="k"></div>
+              <div class="description">
+                <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                  <img :src="v" class="ui image">
+                </div>
+                <div v-else v-text="v"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </body>
+</html>

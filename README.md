@@ -1,1 +1,23 @@
-# vc-viewer
+# Verifiable Credential Viewer
+
+Open locally stored credentials in your browser in order to...
+- preview any [SvgRenderingTemplate2024](https://github.com/w3c-ccg/vc-render-method/issues/9) render methods included
+- view other contents and images
+- edit the JSON-LD
+
+![Screenshot showing a Verifiable Credential being viewed](screenshot.png)
+
+## Usage
+
+Open the `index.html` in your browser (or host a webserver locally to serve
+that file). The rest happens in your browser.
+
+The Web app is built using [petite-vue](https://github.com/vuejs/petite-vue) and
+is delightfully build tool free (for now).
+
+## License
+
+[BSD-3-Clause](LICENSE) Copyright 2024 Digital Bazaar, Inc.
+
+Commercial support and licensing is available by contacting
+[Digital Bazaar](https://digitalbazaar.com/) <support@digitalbazaar.com>.
