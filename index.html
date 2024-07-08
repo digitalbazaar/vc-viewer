@@ -34,20 +34,32 @@
           }
           return template;
         },
+        mustache(template, credential) {
+          credential.formatDate = (text) => {
+            // TODO: no real error parsing here...assumes we only have a date
+            return (text, render) => {
+              // get the data from the Mustache "view"
+              const hydratedTemplate = render(text);
+              const date = new Date(hydratedTemplate);
+              return date.toISOString().split('T')[0];
+            };
+          };
+          return Mustache.render(template, credential);
+        },
         rendering() {
           return `data:image/svg+xml;base64,${btoa(this.renderingSVG())}`;
         },
         renderingSVG() {
           const template = this.template();
           if (template.length > 0) {
-            return Mustache.render(template, this.credential);
+            return this.mustache(template, this.credential);
           }
         },
         async renderings() {
           //const resp = await fetch(this.credential.renderMethod[0].url);
           const resp = this.credential.renderMethod[0].url;
           //const template = await resp.text();
-          const rv = Mustache.render(template, this.credential.credentialSubject);
+          const rv = this.mustache(template, this.credential.credentialSubject);
           this.landscapeSVG = rv;
           this.landscape = `data:image/svg+xml;base64,${btoa(rv)}`;
         },
