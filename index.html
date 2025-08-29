@@ -21,7 +21,16 @@
         template() {
           let template = '';
           if ('renderMethod' in this.credential) {
-            template = atob(this.credential.renderMethod[0].url.split(';base64,')[1]);
+            // TODO: really need to provide for more that one renderMethod
+            const renderMethod = this.credential.renderMethod[0];
+            if ('url' in renderMethod) {
+              const dataUrlRegex = /^data:(?<mediatype>[^;]+)?(;base64)?,(?<data>.*)$/;
+              const match = renderMethod.url.match(dataUrlRegex);
+              template = atob(match.groups.data);
+            } else if ('template' in renderMethod) {
+              // the `template` field should be raw text/markup
+              template = renderMethod.template;
+            }
           }
           return template;
         },
