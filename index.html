@@ -38,10 +38,18 @@
           credential.formatDate = (text) => {
             // TODO: no real error parsing here...assumes we only have a date
             return (text, render) => {
-              // get the data from the Mustache "view"
-              const hydratedTemplate = render(text);
-              const date = new Date(hydratedTemplate);
-              return date.toISOString().split('T')[0];
+              try {
+                // get the data from the Mustache "view"
+                const hydratedTemplate = render(text);
+                if (!hydratedTemplate) {
+                  throw new Error(`Unable to parse date from value: ${text}`)
+                }
+                const date = new Date(hydratedTemplate);
+                return date.toISOString().split('T')[0];
+              } catch(err) {
+                console.error(err);
+                return '';
+              }
             };
           };
           return Mustache.render(template, credential);
