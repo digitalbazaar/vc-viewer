@@ -81,7 +81,7 @@
                   </div>
                 </div>
               </template>
-              <template v-else-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
+              <template v-else-if="['@context', 'credentialSubject', 'issuer', 'renderMethod'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
                 <div class="header" v-text="key"></div>
                 <div class="description">
                   <div v-for="(element) in value">
@@ -147,6 +147,25 @@
                 </div>
                 <div v-else v-text="v"></div>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="column" v-if="'renderMethod' in store.credential">
+          <div class="ui header">Render Methods</div>
+          <div class="ui list" v-for="renderMethod in store.credential.renderMethod">
+            <div class="item" v-for="(v, k) in renderMethod">
+              <template v-if="k !== 'template'">
+                <div class="header" v-text="k"></div>
+                <div class="description">
+                  <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                    <img :src="v" class="ui image">
+                  </div>
+                  <div v-else v-text="v"></div>
+                </div>
+              </template>
+              <template v-else>
+                <div v-scope="SVGViewer()"></div>
+              </template>
             </div>
           </div>
         </div>
