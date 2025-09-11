@@ -12,7 +12,28 @@
     </style>
   </head>
   <body>
-    <main class="ui basic segment">
+
+    <!-- component templates -->
+    <template id="svg-viewer">
+      <div class="ui top attached tabular menu">
+        <div class="item" :class="{ active: currentTab == 'rendered' }"
+          @click="currentTab = 'rendered'">Rendered Template</div>
+        <div class="item" :class="{ active: currentTab == 'code' }"
+          @click="currentTab = 'code'">SVG Template Code</div>
+      </div>
+      <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
+        <div class="ui massive image" v-html="renderingSVG()"></div>
+      </div>
+      <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
+        <div class="ui form">
+          <div class="field">
+            <textarea v-model="template()" placeholder="SVG Template"></textarea>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <main class="ui basic segment" v-scope>
       <div class="ui two column grid">
         <div class="column">
           <div class="ui form">
@@ -24,43 +45,28 @@
             <div class="ui error message" :class="{ visible: parseError.length > 0 }" v-text="parseError"></div>
           </div>
         </div>
-        <div class="column" v-if="template().length > 0">
-          <div class="ui top attached tabular menu">
-            <div class="item" :class="{ active: currentTab == 'rendered' }"
-              @click="currentTab = 'rendered'">Rendered Template</div>
-            <div class="item" :class="{ active: currentTab == 'code' }"
-              @click="currentTab = 'code'">SVG Template Code</div>
-          </div>
-          <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
-            <div class="ui massive image" v-html="renderingSVG()"></div>
-          </div>
-          <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
-            <div class="ui form">
-              <div class="field">
-                <textarea v-model="template()" placeholder="SVG Template"></textarea>
-              </div>
-            </div>
-          </div>
+        <div class="column" v-if="store.credential?.renderMethod">
+          <div v-scope="SVGViewer()"></div>
         </div>
       </div>
 
-      <section class="ui basic segment" v-if="'type' in credential">
+      <section class="ui basic segment" v-if="'type' in store.credential">
         <div class="ui bulleted horizontal list">
           <div class="item">
             <div class="content">
               <div class="header">@context</div>
             </div>
           </div>
-          <a class="link item" v-for="(context) in credential['@context']" v-text="context" :href="context"></a>
+          <a class="link item" v-for="(context) in store.credential['@context']" v-text="context" :href="context"></a>
         </div>
       </section>
       <section class="ui basic segment">
       <!-- Credential Images -->
-      <div class="ui three column divided grid" v-if="Object.keys(credential).length > 0">
+      <div class="ui three column divided grid" v-if="Object.keys(store.credential).length > 0">
         <div class="column">
           <div class="ui header">Credential</div>
           <div class="ui list">
-            <div class="item" v-for="(value, key) in credential">
+            <div class="item" v-for="(value, key) in store.credential">
               <template v-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) !== 'object'">
                 <div class="header" v-text="key"></div>
                 <div class="description" v-text="value"></div>
@@ -101,10 +107,10 @@
             </div>
           </div>
         </div>
-        <div class="column" v-if="'credentialSubject' in credential">
+        <div class="column" v-if="'credentialSubject' in store.credential">
           <div class="ui header">Credential Subject</div>
           <div class="ui list">
-            <div class="item" v-for="(value, key) in credential.credentialSubject">
+            <div class="item" v-for="(value, key) in store.credential.credentialSubject">
               <template v-if="['image'].indexOf(key) === -1 && typeof(value) !== 'object'">
                 <div class="header" v-text="key"></div>
                 <div class="description" v-text="value"></div>
@@ -130,10 +136,10 @@
             </div>
           </div>
         </div>
-        <div class="column" v-if="'issuer' in credential && typeof credential.issuer == 'object'">
+        <div class="column" v-if="'issuer' in store.credential && typeof store.credential.issuer == 'object'">
           <div class="ui header">Issuer</div>
           <div class="ui list">
-            <div class="item" v-for="(v, k) in credential.issuer">
+            <div class="item" v-for="(v, k) in store.credential.issuer">
               <div class="header" v-text="k"></div>
               <div class="description">
                 <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
