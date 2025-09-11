@@ -34,7 +34,7 @@
     </template>
 
     <main class="ui basic segment" v-scope>
-      <div class="ui two column grid">
+      <div class="ui one column grid">
         <div class="column">
           <div class="ui form">
             <button class="ui button" @click="pickFile()">Choose Credential...</button>
@@ -44,9 +44,6 @@
             </div>
             <div class="ui error message" :class="{ visible: parseError.length > 0 }" v-text="parseError"></div>
           </div>
-        </div>
-        <div class="column" v-if="store.credential?.renderMethod">
-          <div v-scope="SVGViewer()"></div>
         </div>
       </div>
 
@@ -152,7 +149,7 @@
         </div>
         <div class="column" v-if="'renderMethod' in store.credential">
           <div class="ui header">Render Methods</div>
-          <div class="ui list" v-for="renderMethod in store.credential.renderMethod">
+          <div class="ui list" v-for="(renderMethod, idx) in store.credential.renderMethod">
             <div class="item" v-for="(v, k) in renderMethod">
               <template v-if="k !== 'template'">
                 <div class="header" v-text="k"></div>
@@ -164,7 +161,7 @@
                 </div>
               </template>
               <template v-else>
-                <div v-scope="SVGViewer()"></div>
+                <div v-scope="SVGViewer({idx})"></div>
               </template>
             </div>
           </div>

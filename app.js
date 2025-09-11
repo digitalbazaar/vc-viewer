@@ -6,7 +6,7 @@ const store = reactive({
 });
 
 // ...depends exclusively on the above reactive data...for better or worse...
-function SVGViewer() {
+function SVGViewer({idx}) {
   return {
     $template: '#svg-viewer',
     // local state
@@ -42,14 +42,16 @@ function SVGViewer() {
       let template = '';
       if ('renderMethod' in store.credential) {
         // TODO: really need to provide for more that one renderMethod
-        const renderMethod = store.credential.renderMethod[0];
-        if ('url' in renderMethod) {
-          const dataUrlRegex = /^data:(?<mediatype>[^;]+)?(;base64)?,(?<data>.*)$/;
-          const match = renderMethod.url.match(dataUrlRegex);
-          template = atob(match.groups.data);
-        } else if ('template' in renderMethod) {
-          // the `template` field should be raw text/markup
-          template = renderMethod.template;
+        const renderMethod = store.credential.renderMethod[idx];
+        if (renderMethod) {
+          if ('url' in renderMethod) {
+            const dataUrlRegex = /^data:(?<mediatype>[^;]+)?(;base64)?,(?<data>.*)$/;
+            const match = renderMethod.url.match(dataUrlRegex);
+            template = atob(match.groups.data);
+          } else if ('template' in renderMethod) {
+            // the `template` field should be raw text/markup
+            template = renderMethod.template;
+          }
         }
       }
       return template;
