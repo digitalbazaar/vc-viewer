@@ -27,7 +27,7 @@
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
         <div class="ui form">
           <div class="field">
-            <textarea v-model="template()" placeholder="SVG Template"></textarea>
+            <textarea v-model="code" placeholder="SVG Template"></textarea>
           </div>
         </div>
       </div>
@@ -168,7 +168,7 @@
             </div>
           </div>
           <div class="column" v-if="renderMethod?.template">
-            <div v-scope="SVGViewer({idx})"></div>
+            <div v-scope="SVGViewer({idx})" @vue:mounted="mounted"></div>
           </div>
         </div>
       </div>
