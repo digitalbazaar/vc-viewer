@@ -10,7 +10,8 @@ function SVGViewer({idx}) {
   return {
     $template: '#svg-viewer',
     // local state
-    currentTab: 'rendered', // rendered or code
+    currentTab: 'code', // rendered or code
+    code: '',
     // methods
     mustache(template, credential) {
       credential.formatDate = (text) => {
@@ -33,9 +34,8 @@ function SVGViewer({idx}) {
       return Mustache.render(template, credential);
     },
     renderingSVG() {
-      const template = this.template();
-      if (template.length > 0) {
-        return this.mustache(template, store.credential);
+      if (this.code.length > 0) {
+        return this.mustache(this.code, store.credential);
       }
     },
     template() {
@@ -55,6 +55,10 @@ function SVGViewer({idx}) {
         }
       }
       return template;
+    },
+    // lifecycle
+    mounted() {
+      this.code = this.template();
     }
   }
 }
