@@ -1,5 +1,7 @@
 import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
 
+import { prettyXML } from './helpers.js';
+
 // global state
 const store = reactive({
   credential: {}
@@ -58,7 +60,7 @@ function SVGViewer({idx}) {
     },
     // lifecycle
     mounted() {
-      this.code = this.template();
+      this.code = prettyXML(this.template());
     }
   }
 }
