@@ -22,7 +22,7 @@
           @click="currentTab = 'code'">SVG Template Code</div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
-        <div class="ui massive image" v-html="renderingSVG()"></div>
+        <div class="ui massive image"><img :src="dataURLfromSVG()"></div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
         <div class="ui form">

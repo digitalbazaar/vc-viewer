@@ -35,6 +35,10 @@ function SVGViewer({idx}) {
       };
       return Mustache.render(template, credential);
     },
+    dataURLfromSVG() {
+      const svg = this.renderingSVG();
+      return `data:image/svg+xml;base64,${btoa(svg)}`;
+    },
     renderingSVG() {
       if (this.code.length > 0) {
         return this.mustache(this.code, store.credential);
