@@ -12,7 +12,7 @@ function SVGViewer({idx}) {
   return {
     $template: '#svg-viewer',
     // local state
-    currentTab: 'code', // rendered or code
+    currentTab: 'rendered', // rendered or code
     code: '',
     // methods
     mustache(template, credential) {
@@ -38,6 +38,12 @@ function SVGViewer({idx}) {
     dataURLfromSVG() {
       const svg = this.renderingSVG();
       return `data:image/svg+xml;base64,${btoa(svg)}`;
+
+      // if(!svg) {
+      //   return '';
+      // }; // Handle undefined case
+      // // Option 1: URL encode (simpler, no encoding issues)
+      // return `data:image/svg+xml,${encodeURIComponent(svg)}`;
     },
     renderingSVG() {
       if (this.code.length > 0) {
