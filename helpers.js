@@ -1,3 +1,7 @@
+// Copyright 2025 Digital Bazaar, Inc.
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
 // from https://stackoverflow.com/a/47317538
 export function prettyXML(sourceXml) {
     var xmlDoc = new DOMParser().parseFromString(sourceXml, 'application/xml');
