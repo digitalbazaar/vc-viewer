@@ -15,6 +15,14 @@ that file). The rest happens in your browser.
 The Web app is built using [petite-vue](https://github.com/vuejs/petite-vue) and
 is delightfully build tool free (for now).
 
+## Render Method implementations
+
+The current viewer code implements *only* SVG processing based on the
+`SvgRenderingTemplate2024` draft. Most importantly, the `template` value MUST
+be a string containing "raw" `<svg>...</svg>` that can be displayed (after
+[Mustache](https://mustache.github.io/) template processing) via an
+`<img src="">` tag.
+
 ## License
 
 [BSD-3-Clause](LICENSE) Copyright 2024 Digital Bazaar, Inc.
