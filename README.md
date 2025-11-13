@@ -1,7 +1,9 @@
 # Verifiable Credential Viewer
 
 Open locally stored credentials in your browser in order to...
-- preview any [SvgRenderingTemplate2024](https://github.com/w3c-ccg/vc-render-method/issues/9) render methods included
+- preview any
+[SvgRenderingTemplate2024](https://github.com/digitalbazaar/vc-render-method-context/blob/main/contexts/v2rc1.jsonld)
+render methods included
 - view other contents and images
 - edit the JSON-LD
 
