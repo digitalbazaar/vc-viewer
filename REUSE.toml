@@ -1,0 +1,6 @@
+version = 1
+
+[[annotations]]
+path = ["*.png"]
+SPDX-FileCopyrightText = "2025 Digital Bazaar, Inc."
+SPDX-License-Identifier = "BSD-3-Clause"

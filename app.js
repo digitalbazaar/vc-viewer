@@ -1,3 +1,7 @@
+// Copyright 2025 Digital Bazaar, Inc.
+//
+// SPDX-License-Identifier: BSD-3-Clause
+
 import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
 
 import { prettyXML } from './helpers.js';

@@ -1,3 +1,9 @@
+<!--
+Copyright 2025 Digital Bazaar, Inc.
+
+SPDX-License-Identifier: BSD-3-Clause
+-->
+
 # Verifiable Credential Viewer
 
 Open locally stored credentials in your browser in order to...
