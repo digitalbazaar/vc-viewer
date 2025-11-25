@@ -6,6 +6,11 @@ import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
 
 import { prettyXML } from './helpers.js';
 
+// Production URL
+const examplesBaseUrl = 'https://examples.vcplayground.org/credentials/';
+// Development URL
+//const examplesBaseUrl = 'http://localhost:8788/credentials/';
+
 // global state
 const store = reactive({
   credential: {}
@@ -73,6 +78,12 @@ function SVGViewer({idx}) {
   }
 }
 
+async function fetchExamples() {
+  const examples = await fetch(`${examplesBaseUrl}index.json`)
+    .then((r) => r.json());
+  return examples;
+}
+
 window.app = createApp({
   // components
   SVGViewer,
@@ -86,6 +97,7 @@ window.app = createApp({
   landscape: "",
   landscapeSVG: "",
   parseError: "",
+  examples: await fetchExamples(),
 
   // methods
   async pickFile() {
@@ -110,6 +122,7 @@ window.app = createApp({
       .then((r) => r.json())
       .then((credential) => {
         store.credential = credential;
+        this.credentialString = JSON.stringify(credential, null, 2);
       })
       .catch(console.error);
   },
@@ -121,5 +134,8 @@ window.app = createApp({
       this.parseError = error.message;
       console.error(error);
     }
+  },
+  loadExampleCredential(event) {
+    this.loadCredential(`${examplesBaseUrl}${event.target.value}`);
   }
-  }).mount();
+}).mount();
