@@ -21,7 +21,7 @@ function SVGViewer({idx}) {
   return {
     $template: '#svg-viewer',
     // local state
-    currentTab: 'code', // rendered or code
+    currentTab: 'rendered', // rendered or code
     code: '',
     // methods
     mustache(template, credential) {
