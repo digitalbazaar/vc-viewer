@@ -54,8 +54,9 @@ SPDX-License-Identifier: BSD-3-Clause
                   <select id="examples" @change="loadExampleCredential">
                     <option value="" disabled selected>Select an example</option>
                     <option
-                      v-for="(paths, name) in examples" :value="paths.credential"
-                      v-text="name"></option>
+                      v-for="example in examples.contains"
+                      :value="example.files.credential"
+                      v-text="example.title"></option>
                   </select>
                 </div>
               </div>

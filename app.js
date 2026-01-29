@@ -136,6 +136,6 @@ window.app = createApp({
     }
   },
   loadExampleCredential(event) {
-    this.loadCredential(`${examplesBaseUrl}${event.target.value}`);
+    this.loadCredential(event.target.value);
   }
 }).mount();
