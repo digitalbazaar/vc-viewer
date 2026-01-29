@@ -6,10 +6,9 @@ import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
 
 import { prettyXML } from './helpers.js';
 
-// Production URL
-const examplesBaseUrl = 'https://examples.vcplayground.org/credentials/';
-// Development URL
-//const examplesBaseUrl = 'http://localhost:8788/credentials/';
+const examplesBaseUrl = window.location.hostname !== 'localhost' ?
+  'https://examples.vcplayground.org/credentials/' :
+  'http://localhost:8788/credentials/';
 
 // global state
 const store = reactive({
