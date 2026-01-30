@@ -23,6 +23,14 @@ that file). The rest happens in your browser.
 The Web app is built using [petite-vue](https://github.com/vuejs/petite-vue) and
 is delightfully build tool free (for now).
 
+## Examples
+
+Examples are pulled from the hosted version of
+https://github.com/credential-handler/vc-examples via a Linked Data Platform
+(LDP) Basic Container description hosted at
+https://examples.vcplayground.org/credentials/index.json
+
+
 ## Render Method implementations
 
 The current viewer code implements *only* SVG processing based on the
