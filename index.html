@@ -172,7 +172,36 @@ SPDX-License-Identifier: BSD-3-Clause
         </div>
       </div>
 
-      <div class="ui two column grid" v-if="'renderMethod' in store.credential">
+      <!-- Single Render Method Object -->
+      <div class="ui two column grid" v-if="'renderMethod' in store.credential && !Array.isArray(store.credential.renderMethod)">
+        <div class="ui header">Render Method</div>
+        <div class="row">
+          <div class="column">
+            <div class="ui list">
+              <div class="item" v-for="(v, k) in store.credential.renderMethod">
+                <template v-if="k !== 'template'">
+                  <div class="header" v-text="k"></div>
+                  <div class="description">
+                    <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                      <img :src="v" class="ui image">
+                    </div>
+                    <div v-else v-text="v"></div>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+          <div class="column" v-if="store.credential.renderMethod.type === 'SvgRenderingTemplate2024' && store.credential.renderMethod?.template">
+            <div v-scope="SVGViewer({idx})" @vue:mounted="mounted"></div>
+          </div>
+          <div class="column" v-else>
+            <div v-text="'No viewer available for render method type: ' + store.credential.renderMethod.type"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Multiple Render Methods in an Array -->
+      <div class="ui two column grid" v-if="'renderMethod' in store.credential && Array.isArray(store.credential.renderMethod)">
         <div class="ui header">Render Methods</div>
         <div class="row" v-for="(renderMethod, idx) in store.credential.renderMethod">
           <div class="column">
@@ -190,8 +219,11 @@ SPDX-License-Identifier: BSD-3-Clause
               </div>
             </div>
           </div>
-          <div class="column" v-if="renderMethod?.template">
+          <div class="column" v-if="renderMethod.type === 'SvgRenderingTemplate2024' && renderMethod?.template">
             <div v-scope="SVGViewer({idx})" @vue:mounted="mounted"></div>
+          </div>
+          <div class="column" v-else>
+            <div v-text="'No viewer available for render method type: ' + renderMethod.type"></div>
           </div>
         </div>
       </div>
