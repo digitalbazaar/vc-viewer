@@ -55,8 +55,10 @@ function SVGViewer({idx}) {
     template() {
       let template = '';
       if ('renderMethod' in store.credential) {
-        // TODO: really need to provide for more that one renderMethod
-        const renderMethod = store.credential.renderMethod[idx];
+        const renderMethod = Array.isArray(store.credential.renderMethod) ?
+          store.credential.renderMethod[idx] :
+          store.credential.renderMethod;
+
         if (renderMethod) {
           if ('url' in renderMethod) {
             const dataUrlRegex = /^data:(?<mediatype>[^;]+)?(;base64)?,(?<data>.*)$/;
