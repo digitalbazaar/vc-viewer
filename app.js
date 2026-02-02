@@ -80,9 +80,16 @@ function SVGViewer({idx}) {
 }
 
 function HTMLViewer({template, credential}) {
+  const store = reactive({
+    code: template
+  });
+
   return {
     $template: '#html-viewer',
-
+    // local state
+    currentTab: 'rendered', // rendered or code
+    store,
+    // methods
     shimCode() {
       const {renderMethod, ...partialCredential} = credential;
       // TODO: process `renderProperty` if present to extract specific properties
@@ -92,7 +99,7 @@ function HTMLViewer({template, credential}) {
           <script name="credential" type="application/vc">${JSON.stringify(partialCredential)}</script>
         </head>
         <body>
-          ${template}
+          ${store.code}
         </body>
       </html>`;
     }
