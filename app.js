@@ -5,6 +5,7 @@
 import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
 
 import { prettyXML } from './helpers.js';
+import { selectJsonLd } from './select.js';
 
 const examplesBaseUrl = window.location.hostname !== 'localhost' ?
   'https://examples.vcplayground.org/credentials/' :
@@ -92,11 +93,18 @@ function HTMLViewer({template, credential}) {
     // methods
     shimCode() {
       const {renderMethod, ...partialCredential} = credential;
-      // TODO: process `renderProperty` if present to extract specific properties
+      const filteredCredential = selectJsonLd({
+        // credential must be un-Proxy-object'd
+        document: JSON.parse(JSON.stringify(credential)),
+        // TODO: ...which renderMethod do we have renderProperties from? Pass
+        // that into HTML Viewer?
+        pointers: credential.renderMethod.renderProperty
+      });
+      console.log(filteredCredential);
       return `<html>
         <head>
           <meta http-equiv="content-security-policy" content="default-src data: 'unsafe-inline'">
-          <script name="credential" type="application/vc">${JSON.stringify(partialCredential)}</script>
+          <script name="credential" type="application/vc">${JSON.stringify(filteredCredential)}</script>
         </head>
         <body>
           ${store.code}
