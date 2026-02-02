@@ -46,6 +46,8 @@ SPDX-License-Identifier: BSD-3-Clause
           @click="currentTab = 'rendered'">Rendered Template</div>
         <div class="item" :class="{ active: currentTab == 'code' }"
           @click="currentTab = 'code'">HTML Template Code</div>
+        <div class="item" :class="{ active: currentTab == 'credential' }"
+          @click="currentTab = 'credential'">Filtered Credential</div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
         <iframe sandbox="allow-scripts allow-modals" :srcdoc="shimCode()" style="width: 100%; border: none;"></iframe>
@@ -54,6 +56,13 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="ui form">
           <div class="field">
             <textarea v-model="store.code" placeholder="HTML Template"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'credential' }">
+        <div class="ui form">
+          <div class="field">
+            <textarea v-model="store.filteredCredential"></textarea>
           </div>
         </div>
       </div>
