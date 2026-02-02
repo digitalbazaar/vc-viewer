@@ -245,6 +245,9 @@ SPDX-License-Identifier: BSD-3-Clause
           <div class="column" v-if="renderMethod.type === 'SvgRenderingTemplate2024' && renderMethod?.template">
             <div v-scope="SVGViewer({idx})" @vue:mounted="mounted"></div>
           </div>
+          <div class="column" v-else-if="renderMethod.type === 'TemplateRenderMethod' && renderMethod.renderSuite === 'html'">
+            <div v-scope="HTMLViewer({template: renderMethod?.template, credential: store.credential, pointers: renderMethod.renderProperty})"></div>
+          </div>
           <div class="column" v-else>
             <div v-text="'No viewer available for render method type: ' + renderMethod.type"></div>
           </div>
