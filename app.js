@@ -80,7 +80,7 @@ function SVGViewer({idx}) {
   }
 }
 
-function HTMLViewer({template, credential}) {
+function HTMLViewer({template, credential, pointers}) {
   const store = reactive({
     code: template
   });
@@ -98,7 +98,7 @@ function HTMLViewer({template, credential}) {
         document: JSON.parse(JSON.stringify(credential)),
         // TODO: ...which renderMethod do we have renderProperties from? Pass
         // that into HTML Viewer?
-        pointers: credential.renderMethod.renderProperty
+        pointers
       });
       console.log(filteredCredential);
       return `<html>

@@ -215,7 +215,7 @@ SPDX-License-Identifier: BSD-3-Clause
             <div v-scope="SVGViewer({idx})" @vue:mounted="mounted"></div>
           </div>
           <div class="column" v-else-if="store.credential.renderMethod.type === 'TemplateRenderMethod' && store.credential.renderMethod.renderSuite === 'html'">
-            <div v-scope="HTMLViewer({template: store.credential.renderMethod?.template, credential: store.credential})"></div>
+            <div v-scope="HTMLViewer({template: store.credential.renderMethod?.template, credential: store.credential, pointers: store.credential.renderMethod.renderProperty})"></div>
           </div>
           <div class="column" v-else>
             <div v-text="'No viewer available for render method type: ' + store.credential.renderMethod.type"></div>
