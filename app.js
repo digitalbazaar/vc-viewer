@@ -82,29 +82,28 @@ function SVGViewer({idx}) {
 
 function HTMLViewer({template, credential, pointers}) {
   const store = reactive({
-    code: template
+    code: template,
+    filteredCredential: JSON.stringify(selectJsonLd({
+      // credential must be un-Proxy-object'd
+      document: JSON.parse(JSON.stringify(credential)),
+      // TODO: ...which renderMethod do we have renderProperties from? Pass
+      // that into HTML Viewer?
+      pointers
+    }), null, 2)
   });
 
   return {
     $template: '#html-viewer',
     // local state
-    currentTab: 'rendered', // rendered or code
+    currentTab: 'rendered', // rendered or codei
     store,
     // methods
     shimCode() {
       const {renderMethod, ...partialCredential} = credential;
-      const filteredCredential = selectJsonLd({
-        // credential must be un-Proxy-object'd
-        document: JSON.parse(JSON.stringify(credential)),
-        // TODO: ...which renderMethod do we have renderProperties from? Pass
-        // that into HTML Viewer?
-        pointers
-      });
-      console.log(filteredCredential);
       return `<html>
         <head>
           <meta http-equiv="content-security-policy" content="default-src data: 'unsafe-inline'">
-          <script name="credential" type="application/vc">${JSON.stringify(filteredCredential)}</script>
+          <script name="credential" type="application/vc">${store.filteredCredential}</script>
         </head>
         <body>
           ${store.code}
