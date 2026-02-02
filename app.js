@@ -79,6 +79,26 @@ function SVGViewer({idx}) {
   }
 }
 
+function HTMLViewer({template, credential}) {
+  return {
+    $template: '#html-viewer',
+
+    shimCode() {
+      const {renderMethod, ...partialCredential} = credential;
+      // TODO: process `renderProperty` if present to extract specific properties
+      return `<html>
+        <head>
+          <meta http-equiv="content-security-policy" content="default-src data: 'unsafe-inline'">
+          <script name="credential" type="application/vc">${JSON.stringify(partialCredential)}</script>
+        </head>
+        <body>
+          ${template}
+        </body>
+      </html>`;
+    }
+  };
+}
+
 async function fetchExamples() {
   const examples = await fetch(`${examplesBaseUrl}index.json`)
     .then((r) => r.json());
@@ -87,6 +107,7 @@ async function fetchExamples() {
 
 window.app = createApp({
   // components
+  HTMLViewer,
   SVGViewer,
 
   // global state

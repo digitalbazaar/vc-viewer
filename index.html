@@ -7,6 +7,7 @@ SPDX-License-Identifier: BSD-3-Clause
 <html>
   <head>
     <title>Credential Viewer</title>
+    <meta http-equiv="content-security-policy" content="frame-src 'none'">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.0/semantic.min.css" integrity="sha512-PwhgdrueUt7iVICnZMjYcbiLalCztrVfzUIYXekIK8hZu4DQP141GrKh6fUHmNERWi4bGdBXIZqtBZnsSzHEMg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.1.0/mustache.min.js" integrity="sha512-HYiNpwSxYuji84SQbCU5m9kHEsRqwWypXgJMBtbRSumlx1iBB6QaxgEBZHSHEGM+fKyCX/3Kb5V5jeVXm0OglQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script type="module">
@@ -36,6 +37,12 @@ SPDX-License-Identifier: BSD-3-Clause
             <textarea v-model="code" placeholder="SVG Template"></textarea>
           </div>
         </div>
+      </div>
+    </template>
+
+    <template id="html-viewer">
+      <div class="ui segment">
+        <iframe sandbox="allow-scripts allow-modals" :srcdoc="shimCode()" style="width: 100%; height: 600px; border: none;"></iframe>
       </div>
     </template>
 
@@ -193,6 +200,9 @@ SPDX-License-Identifier: BSD-3-Clause
           </div>
           <div class="column" v-if="store.credential.renderMethod.type === 'SvgRenderingTemplate2024' && store.credential.renderMethod?.template">
             <div v-scope="SVGViewer({idx})" @vue:mounted="mounted"></div>
+          </div>
+          <div class="column" v-else-if="store.credential.renderMethod.type === 'TemplateRenderMethod' && store.credential.renderMethod.renderSuite === 'html'">
+            <div v-scope="HTMLViewer({template: store.credential.renderMethod?.template, credential: store.credential})"></div>
           </div>
           <div class="column" v-else>
             <div v-text="'No viewer available for render method type: ' + store.credential.renderMethod.type"></div>
