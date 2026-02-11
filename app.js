@@ -81,8 +81,15 @@ function SVGViewer({idx}) {
 }
 
 function HTMLViewer({template, credential, pointers}) {
+  let code = template;
+  if(template.startsWith('data:text/html;base64,')) {
+    code = atob(template.replace('data:text/html;base64,', ''));
+  } else if(template.startsWith('data:text/html,')) {
+    code = template.replace('data:text/html,', '');
+  }
+
   const store = reactive({
-    code: template,
+    code,
     filteredCredential: JSON.stringify(selectJsonLd({
       // credential must be un-Proxy-object'd
       document: JSON.parse(JSON.stringify(credential)),
