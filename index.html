@@ -22,6 +22,7 @@ SPDX-License-Identifier: BSD-3-Clause
     </script>
     <style>
       .ui.list .ui.list { border-left: 1px solid lightgray; }
+      .force-wrap { overflow-wrap: anywhere; }
     </style>
   </head>
   <body>
@@ -86,7 +87,7 @@ SPDX-License-Identifier: BSD-3-Clause
                   <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
                     <img :src="v" class="ui image">
                   </div>
-                  <div v-else v-text="v"></div>
+                  <div v-else v-text="v" :class="{ 'force-wrap': k == 'verificationMethod' || k == 'proofValue' }"></div>
                 </div>
               </template>
             </div>
