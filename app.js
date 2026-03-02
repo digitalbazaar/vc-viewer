@@ -120,6 +120,13 @@ function HTMLViewer({template, credential, pointers}) {
   };
 }
 
+function ObjectTree({value}) {
+  return {
+    $template: '#object-tree',
+    value
+  };
+}
+
 async function fetchExamples() {
   const examples = await fetch(`${examplesBaseUrl}index.json`)
     .then((r) => r.json());
@@ -130,6 +137,7 @@ window.app = createApp({
   // components
   HTMLViewer,
   SVGViewer,
+  ObjectTree,
 
   // global state
   store,
