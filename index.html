@@ -74,6 +74,26 @@ SPDX-License-Identifier: BSD-3-Clause
       </div>
     </template>
 
+    <template id="object-tree">
+      <div v-for="(element) in value">
+        <div v-if="typeof(element) !== 'object'" v-text="element"></div>
+        <div v-if="typeof(element) === 'object' && !Array.isArray(element)">
+          <div class="ui list">
+            <div class="item" v-for="[k, v] in Object.entries(element).sort(sortKeys)">
+              <template v-if="typeof(v) !== 'object'">
+                <div class="header" v-text="k"></div>
+                <div class="description">
+                  <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                    <img :src="v" class="ui image">
+                  </div>
+                  <div v-else v-text="v"></div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
     <!-- main appication -->
     <main class="ui basic segment" v-scope>
       <div class="ui one column grid">
@@ -138,26 +158,7 @@ SPDX-License-Identifier: BSD-3-Clause
               </template>
               <template v-else-if="['@context', 'credentialSubject', 'issuer', 'renderMethod', 'formatDate'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
                 <div class="header" v-text="key"></div>
-                <div class="description">
-                  <div v-for="(element) in value">
-                    <div v-if="typeof(element) !== 'object'" v-text="element"></div>
-                    <div v-if="typeof(element) === 'object' && !Array.isArray(element)">
-                      <div class="ui list">
-                        <div class="item" v-for="[k, v] in Object.entries(element).sort(sortKeys)">
-                          <template v-if="typeof(v) !== 'object'">
-                            <div class="header" v-text="k"></div>
-                            <div class="description">
-                              <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
-                                <img :src="v" class="ui image">
-                              </div>
-                              <div v-else v-text="v"></div>
-                            </div>
-                          </template>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <div class="description" v-scope="ObjectTree({value})"></div>
               </template>
             </div>
           </div>
@@ -165,29 +166,13 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="column" v-if="'credentialSubject' in store.credential">
           <div class="ui header">Credential Subject</div>
           <div class="ui list">
-            <div class="item" v-for="[key, value] in Object.entries(store.credential.credentialSubject).sort(sortKeys)">
-              <template v-if="['image'].indexOf(key) === -1 && typeof(value) !== 'object'">
-                <div class="header" v-text="key"></div>
-                <div class="description" v-text="value"></div>
-              </template>
-              <template v-else>
-                <div class="header" v-text="key"></div>
-                <div class="description">
-                  <div class="ui list">
-                    <div class="item" v-for="(v, k) in value">
-                      <template v-if="['image'].indexOf(k) === -1 && typeof(v) !== 'object'">
-                        <div class="header" v-text="k"></div>
-                        <div class="description">
-                          <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
-                            <img :src="v" class="ui image">
-                          </div>
-                          <div v-else v-text="v"></div>
-                        </div>
-                      </template>
-                    </div>
-                  </div>
-                </div>
-              </template>
+            <div class="item" v-for="[k, v] in Object.entries(store.credential.credentialSubject).sort(sortKeys)">
+              <div class="header" v-text="k"></div>
+              <div class="description" v-if="typeof(v) === 'object'" v-scope="ObjectTree({value: v})"></div>
+              <div class="description" v-else-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
+                <img :src="v" class="ui image">
+              </div>
+              <div class="description" v-else v-text="v"></div>
             </div>
           </div>
         </div>
