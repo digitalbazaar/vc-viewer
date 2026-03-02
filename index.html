@@ -13,6 +13,12 @@ SPDX-License-Identifier: BSD-3-Clause
     <script type="module">
       import './app.js';
     </script>
+    <script>
+      // for use with 'Object.entries().sort()' to ensure 'id' and 'type' are always
+      // first and the remainder is alphabetical
+      function sortKeys(a, b) {
+        return (a, b) => a[0] === 'id' || a[0] === 'type' ? -1 : b[0] === 'id' || b[0] === 'type' ? 1 : a[0] > b[0] ? 1 : -1
+      }
     </script>
     <style>
       .ui.list .ui.list { border-left: 1px solid lightgray; }
@@ -115,7 +121,7 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="column">
           <div class="ui header">Credential</div>
           <div class="ui list">
-            <div class="item" v-for="(value, key) in store.credential">
+            <div class="item" v-for="[key, value] in Object.entries(store.credential).sort(sortKeys)">
               <template v-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) !== 'object'">
                 <div class="header" v-text="key"></div>
                 <div class="description" v-text="value"></div>
@@ -130,14 +136,14 @@ SPDX-License-Identifier: BSD-3-Clause
                   </div>
                 </div>
               </template>
-              <template v-else-if="['@context', 'credentialSubject', 'issuer', 'renderMethod'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
+              <template v-else-if="['@context', 'credentialSubject', 'issuer', 'renderMethod', 'formatDate'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
                 <div class="header" v-text="key"></div>
                 <div class="description">
                   <div v-for="(element) in value">
                     <div v-if="typeof(element) !== 'object'" v-text="element"></div>
                     <div v-if="typeof(element) === 'object' && !Array.isArray(element)">
                       <div class="ui list">
-                        <div class="item" v-for="(v, k) in element">
+                        <div class="item" v-for="[k, v] in Object.entries(element).sort(sortKeys)">
                           <template v-if="typeof(v) !== 'object'">
                             <div class="header" v-text="k"></div>
                             <div class="description">
@@ -159,7 +165,7 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="column" v-if="'credentialSubject' in store.credential">
           <div class="ui header">Credential Subject</div>
           <div class="ui list">
-            <div class="item" v-for="(value, key) in store.credential.credentialSubject">
+            <div class="item" v-for="[key, value] in Object.entries(store.credential.credentialSubject).sort(sortKeys)">
               <template v-if="['image'].indexOf(key) === -1 && typeof(value) !== 'object'">
                 <div class="header" v-text="key"></div>
                 <div class="description" v-text="value"></div>
@@ -188,7 +194,7 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="column" v-if="'issuer' in store.credential && typeof store.credential.issuer == 'object'">
           <div class="ui header">Issuer</div>
           <div class="ui list">
-            <div class="item" v-for="(v, k) in store.credential.issuer">
+            <div class="item" v-for="[k, v] in Object.entries(store.credential.issuer).sort(sortKeys)">
               <div class="header" v-text="k"></div>
               <div class="description">
                 <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
@@ -207,7 +213,7 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="row">
           <div class="column">
             <div class="ui list">
-              <div class="item" v-for="(v, k) in store.credential.renderMethod">
+              <div class="item" v-for="[k, v] in Object.entries(store.credential.renderMethod).sort(sortKeys)">
                 <template v-if="k !== 'template'">
                   <div class="header" v-text="k"></div>
                   <div class="description">
@@ -238,7 +244,7 @@ SPDX-License-Identifier: BSD-3-Clause
         <div class="row" v-for="(renderMethod, idx) in store.credential.renderMethod">
           <div class="column">
             <div class="ui list">
-              <div class="item" v-for="(v, k) in renderMethod">
+              <div class="item" v-for="[k, v] in Object.entries(renderMethod).sort(sortKeys)">
                 <template v-if="k !== 'template'">
                   <div class="header" v-text="k"></div>
                   <div class="description">
