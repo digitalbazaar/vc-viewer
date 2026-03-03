@@ -127,6 +127,13 @@ function ObjectTree({value}) {
   };
 }
 
+function KVList({value}) {
+  return {
+    $template: '#kv-list',
+    value
+  };
+}
+
 async function fetchExamples() {
   const examples = await fetch(`${examplesBaseUrl}index.json`)
     .then((r) => r.json());
@@ -138,6 +145,7 @@ window.app = createApp({
   HTMLViewer,
   SVGViewer,
   ObjectTree,
+  KVList,
 
   // global state
   store,
