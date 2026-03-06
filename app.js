@@ -16,11 +16,11 @@ const store = reactive({
   credential: {}
 });
 
-// ...depends exclusively on the above reactive data...for better or worse...
-function SVGViewer({idx}) {
+function SVGViewer({idx, credential}) {
   return {
     $template: '#svg-viewer',
     // local state
+    credential,
     currentTab: 'rendered', // rendered or code
     code: '',
     // methods
@@ -50,15 +50,15 @@ function SVGViewer({idx}) {
     },
     renderingSVG() {
       if (this.code.length > 0) {
-        return this.mustache(this.code, store.credential);
+        return this.mustache(this.code, this.credential);
       }
     },
     template() {
       let template = '';
-      if ('renderMethod' in store.credential) {
-        const renderMethod = Array.isArray(store.credential.renderMethod) ?
-          store.credential.renderMethod[idx] :
-          store.credential.renderMethod;
+      if ('renderMethod' in this.credential) {
+        const renderMethod = Array.isArray(this.credential.renderMethod) ?
+          this.credential.renderMethod[idx] :
+          this.credential.renderMethod;
 
         if (renderMethod) {
           if ('url' in renderMethod) {
