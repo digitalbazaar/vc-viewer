@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import { createApp, reactive } from 'https://unpkg.com/petite-vue?module'
-
-import { prettyXML } from './helpers.js';
-import { selectJsonLd } from './select.js';
+import { SVGViewer } from './viewers/svg-mustache.js';
+import { HTMLViewer } from './viewers/html.js';
 
 const examplesBaseUrl = window.location.hostname !== 'localhost' ?
   'https://examples.vcplayground.org/credentials/' :
@@ -15,110 +14,6 @@ const examplesBaseUrl = window.location.hostname !== 'localhost' ?
 const store = reactive({
   credential: {}
 });
-
-function SVGViewer({idx, credential}) {
-  return {
-    $template: '#svg-viewer',
-    // local state
-    credential,
-    currentTab: 'rendered', // rendered or code
-    code: '',
-    // methods
-    mustache(template, credential) {
-      credential.formatDate = (text) => {
-        // TODO: no real error parsing here...assumes we only have a date
-        return (text, render) => {
-          try {
-            // get the data from the Mustache "view"
-            const hydratedTemplate = render(text);
-            if (!hydratedTemplate) {
-              throw new Error(`Unable to parse date from value: ${text}`)
-            }
-            const date = new Date(hydratedTemplate);
-            return date.toISOString().split('T')[0];
-          } catch(err) {
-            console.error(err);
-            return '';
-          }
-        };
-      };
-      return Mustache.render(template, credential);
-    },
-    dataURLfromSVG() {
-      const svg = this.renderingSVG();
-      return `data:image/svg+xml;base64,${btoa(svg)}`;
-    },
-    renderingSVG() {
-      if (this.code.length > 0) {
-        return this.mustache(this.code, this.credential);
-      }
-    },
-    template() {
-      let template = '';
-      if ('renderMethod' in this.credential) {
-        const renderMethod = Array.isArray(this.credential.renderMethod) ?
-          this.credential.renderMethod[idx] :
-          this.credential.renderMethod;
-
-        if (renderMethod) {
-          if ('url' in renderMethod) {
-            const dataUrlRegex = /^data:(?<mediatype>[^;]+)?(;base64)?,(?<data>.*)$/;
-            const match = renderMethod.url.match(dataUrlRegex);
-            template = atob(match.groups.data);
-          } else if ('template' in renderMethod) {
-            // the `template` field should be raw text/markup
-            template = renderMethod.template;
-          }
-        }
-      }
-      return template;
-    },
-    // lifecycle
-    mounted() {
-      this.code = prettyXML(this.template());
-    }
-  }
-}
-
-function HTMLViewer({template, credential, pointers}) {
-  let code = template;
-  if(template.startsWith('data:text/html;base64,')) {
-    code = atob(template.replace('data:text/html;base64,', ''));
-  } else if(template.startsWith('data:text/html,')) {
-    code = template.replace('data:text/html,', '');
-  }
-
-  const store = reactive({
-    code,
-    filteredCredential: JSON.stringify(selectJsonLd({
-      // credential must be un-Proxy-object'd
-      document: JSON.parse(JSON.stringify(credential)),
-      // TODO: ...which renderMethod do we have renderProperties from? Pass
-      // that into HTML Viewer?
-      pointers
-    }), null, 2)
-  });
-
-  return {
-    $template: '#html-viewer',
-    // local state
-    currentTab: 'rendered', // rendered or codei
-    store,
-    // methods
-    shimCode() {
-      const {renderMethod, ...partialCredential} = credential;
-      return `<html>
-        <head>
-          <meta http-equiv="content-security-policy" content="default-src data: 'unsafe-inline'">
-          <script name="credential" type="application/vc">${store.filteredCredential}</script>
-        </head>
-        <body>
-          ${store.code}
-        </body>
-      </html>`;
-    }
-  };
-}
 
 function ObjectTree({value}) {
   return {
