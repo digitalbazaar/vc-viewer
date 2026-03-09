@@ -10,11 +10,6 @@ const examplesBaseUrl = window.location.hostname !== 'localhost' ?
   'https://examples.vcplayground.org/credentials/' :
   'http://localhost:8788/credentials/';
 
-// global state
-const store = reactive({
-  credential: {}
-});
-
 function ObjectTree({value}) {
   return {
     $template: '#object-tree',
@@ -22,7 +17,7 @@ function ObjectTree({value}) {
   };
 }
 
-function KVList({value}) {
+function KVList(value) {
   return {
     $template: '#kv-list',
     value
@@ -43,7 +38,9 @@ window.app = createApp({
   KVList,
 
   // global state
-  store,
+  store: reactive({
+    credential: {}
+  }),
 
   // local state
   credentialString: "",
@@ -53,6 +50,14 @@ window.app = createApp({
   parseError: "",
   examples: await fetchExamples(),
 
+  // reactive set
+  setCredential(credential) {
+    this.store.credential = {};
+    this.$nextTick(() => {
+      this.store.credential = credential;
+    });
+  },
+
   // methods
   async pickFile() {
     const [fileHandle] = await window.showOpenFilePicker();
@@ -61,7 +66,7 @@ window.app = createApp({
     const text = await file.text();
     try {
       this.credentialString = text;
-      store.credential = JSON.parse(this.credentialString);
+      this.setCredential(JSON.parse(this.credentialString));
       this.parseError = "";
     } catch(error) {
       // TODO: error on selected files should be reported somewhere else
@@ -75,14 +80,14 @@ window.app = createApp({
     fetch(this.credentialUrl)
       .then((r) => r.json())
       .then((credential) => {
-        store.credential = credential;
+        this.setCredential(credential);
         this.credentialString = JSON.stringify(credential, null, 2);
       })
       .catch(console.error);
   },
   getCredential($event) {
     try {
-      store.credential = JSON.parse($event.target.value);
+      this.setCredential(JSON.parse($event.target.value));
       this.parseError = "";
     } catch(error) {
       this.parseError = error.message;
