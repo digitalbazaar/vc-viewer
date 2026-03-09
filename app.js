@@ -10,13 +10,6 @@ const examplesBaseUrl = window.location.hostname !== 'localhost' ?
   'https://examples.vcplayground.org/credentials/' :
   'http://localhost:8788/credentials/';
 
-function ObjectTree({value}) {
-  return {
-    $template: '#object-tree',
-    value
-  };
-}
-
 function KVList(value) {
   return {
     $template: '#kv-list',
@@ -34,7 +27,6 @@ window.app = createApp({
   // components
   HTMLViewer,
   SVGViewer,
-  ObjectTree,
   KVList,
 
   // global state
