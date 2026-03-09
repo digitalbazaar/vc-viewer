@@ -35,7 +35,10 @@ export function SVGViewer({idx, credential}) {
     code: '',
     // methods
     mustache(template, credential) {
-      credential.formatDate = (text) => {
+      // clone credential, add formatDate helper, and use that for rendering the
+      // Mustache template
+      const credentialClone = JSON.parse(JSON.stringify(credential));
+      credentialClone.formatDate = (text) => {
         // TODO: no real error parsing here...assumes we only have a date
         return (text, render) => {
           try {
@@ -52,7 +55,7 @@ export function SVGViewer({idx, credential}) {
           }
         };
       };
-      return Mustache.render(template, credential);
+      return Mustache.render(template, credentialClone);
     },
     dataURLfromSVG() {
       const svg = this.renderingSVG();
