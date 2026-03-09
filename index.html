@@ -95,10 +95,23 @@ SPDX-License-Identifier: BSD-3-Clause
     </template>
 
     <template id="kv-list">
-      <div class="item" v-for="[k, v] in Object.entries(value).sort(sortKeys)">
+      <div class="item" v-for="[k, v] in Object.entries(value).sort(sortKeys)" :key="k">
         <div class="header" v-text="k"></div>
-        <div class="description" v-if="typeof(v) === 'object' && Array.isArray(v)" v-scope="ObjectTree({value: v})"></div>
-        <div class="description" v-else-if="typeof(v) === 'object' && !Array.isArray(v)" v-scope="KVList({value: v})"></div>
+        <div class="description" v-if="typeof(v) === 'object' && Array.isArray(v)">
+          <div class="ui list">
+            <div class="item" v-for="(item) in v" :key="item">
+              <template v-if="typeof(item) !== 'object'">
+                <div v-text="item"></div>
+              </template>
+              <template v-else-if="typeof(item) === 'object' && !Array.isArray(item)">
+                <div class="ui list" v-scope="KVList(item)"></div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="description" v-else-if="typeof(v) === 'object' && !Array.isArray(v)">
+          <div class="ui list" v-scope="KVList(v)"></div>
+        </div>
         <div class="description" v-else-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
           <img :src="v" class="ui image">
         </div>
@@ -177,11 +190,12 @@ SPDX-License-Identifier: BSD-3-Clause
         </div>
         <div class="column" v-if="'credentialSubject' in store.credential">
           <div class="ui header">Credential Subject</div>
-          <div class="ui list" v-scope="KVList({value: store.credential.credentialSubject})"></div>
+          <div class="ui list" v-scope="KVList(store.credential.credentialSubject)"></div>
         </div>
-        <div class="column" v-if="'issuer' in store.credential && typeof store.credential.issuer == 'object'">
+        <div class="column" v-if="'issuer' in store.credential">
           <div class="ui header">Issuer</div>
-          <div class="ui list" v-scope="KVList({value: store.credential.issuer})"></div>
+          <div v-if="typeof store.credential.issuer === 'string'" v-text="store.credential.issuer"></div>
+          <div v-else class="ui list" v-scope="KVList(store.credential.issuer)"></div>
         </div>
       </div>
 
