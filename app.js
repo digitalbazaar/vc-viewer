@@ -10,10 +10,11 @@ const examplesBaseUrl = window.location.hostname !== 'localhost' ?
   'https://examples.vcplayground.org/credentials/' :
   'http://localhost:8788/credentials/';
 
-function KVList(value) {
+function KVList(value, ignoreKeys = []) {
   return {
     $template: '#kv-list',
-    value
+    value,
+    ignoreKeys
   };
 }
 
