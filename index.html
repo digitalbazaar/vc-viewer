@@ -76,7 +76,7 @@ SPDX-License-Identifier: BSD-3-Clause
     </template>
 
     <template id="kv-list">
-      <div class="item" v-for="[k, v] in Object.entries(value).sort(sortKeys)" :key="k">
+      <div class="item" v-for="[k, v] in Object.entries(value).filter(([k]) => !ignoreKeys.includes(k)).sort(sortKeys)" :key="k">
         <div class="header" v-text="k"></div>
         <div class="description" v-if="typeof(v) === 'object' && Array.isArray(v)">
           <div class="ui list">
@@ -142,32 +142,12 @@ SPDX-License-Identifier: BSD-3-Clause
         </div>
       </section>
       <section class="ui basic segment">
-      <!-- Credential Images -->
+
       <div class="ui three column divided grid" v-if="Object.keys(store.credential).length > 0">
+        <!-- Top-level Credential keys which are not `credentialSubject`, `@context`, `issuer`, or `renderMethod` -->
         <div class="column">
           <div class="ui header">Credential</div>
-          <div class="ui list">
-            <div class="item" v-for="[key, value] in Object.entries(store.credential).sort(sortKeys)">
-              <template v-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) !== 'object'">
-                <div class="header" v-text="key"></div>
-                <div class="description" v-text="value"></div>
-              </template>
-              <template v-else-if="['@context', 'credentialSubject', 'issuer'].indexOf(key) === -1 && typeof(value) === 'object' && !Array.isArray(value)">
-                <div class="ui list">
-                  <div class="item" v-for="(v, k) in value">
-                    <template v-if="['@context', 'credentialSubject', 'issuer'].indexOf(k) === -1 && typeof(v) !== 'object'">
-                      <div class="header" v-text="k"></div>
-                      <div class="description" v-text="v"></div>
-                    </template>
-                  </div>
-                </div>
-              </template>
-              <template v-else-if="['@context', 'credentialSubject', 'issuer', 'renderMethod', 'formatDate'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
-                <div class="header" v-text="key"></div>
-                <div class="description" v-scope="KVList(value)"></div>
-              </template>
-            </div>
-          </div>
+          <div class="ui list" v-scope="KVList(store.credential, ['@context', 'credentialSubject', 'issuer', 'renderMethod'])"></div>
         </div>
         <div class="column" v-if="'credentialSubject' in store.credential">
           <div class="ui header">Credential Subject</div>
