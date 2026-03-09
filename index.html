@@ -75,25 +75,6 @@ SPDX-License-Identifier: BSD-3-Clause
       </div>
     </template>
 
-    <template id="object-tree">
-      <div v-for="(element) in value">
-        <div v-if="typeof(element) !== 'object'" v-text="element"></div>
-        <div v-else-if="typeof(element) === 'object' && !Array.isArray(element)" class="ui list">
-          <div class="item" v-for="[k, v] in Object.entries(element).sort(sortKeys)">
-            <template v-if="typeof(v) !== 'object'">
-              <div class="header" v-text="k"></div>
-              <div class="description">
-                <div v-if="typeof(v) === 'string' && v.substr(0, 10) === 'data:image'">
-                  <img :src="v" class="ui image">
-                </div>
-                <div v-else v-text="v" :class="{ 'force-wrap': k == 'verificationMethod' || k == 'proofValue' }"></div>
-              </div>
-            </template>
-          </div>
-        </div>
-      </div>
-    </template>
-
     <template id="kv-list">
       <div class="item" v-for="[k, v] in Object.entries(value).sort(sortKeys)" :key="k">
         <div class="header" v-text="k"></div>
@@ -183,7 +164,7 @@ SPDX-License-Identifier: BSD-3-Clause
               </template>
               <template v-else-if="['@context', 'credentialSubject', 'issuer', 'renderMethod', 'formatDate'].indexOf(key) === -1 && typeof(value) === 'object' && Array.isArray(value)">
                 <div class="header" v-text="key"></div>
-                <div class="description" v-scope="ObjectTree({value})"></div>
+                <div class="description" v-scope="KVList(value)"></div>
               </template>
             </div>
           </div>
