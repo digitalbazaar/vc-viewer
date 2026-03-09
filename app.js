@@ -10,11 +10,20 @@ const examplesBaseUrl = window.location.hostname !== 'localhost' ?
   'https://examples.vcplayground.org/credentials/' :
   'http://localhost:8788/credentials/';
 
+// components
 function KVList(value, ignoreKeys = []) {
   return {
     $template: '#kv-list',
     value,
     ignoreKeys
+  };
+}
+
+function RenderMethod(renderMethod, idx = 0) {
+  return {
+    $template: '#render-method',
+    idx,
+    renderMethod
   };
 }
 
@@ -29,6 +38,7 @@ window.app = createApp({
   HTMLViewer,
   SVGViewer,
   KVList,
+  RenderMethod,
 
   // global state
   store: reactive({
