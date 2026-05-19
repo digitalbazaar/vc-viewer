@@ -112,6 +112,15 @@ window.app = createApp({
       if(event.data?.ready) {
         iframe.removeAttribute('hidden');
         loader.setAttribute('hidden', 'hidden');
+        if(event.data?.pdf) {
+          // append another iframe after the current one with the PDF data URL
+          const pdfDownloadLink = document.createElement('a');
+          pdfDownloadLink.href = event.data.pdf;
+          pdfDownloadLink.download = 'credential.pdf';
+          pdfDownloadLink.textContent = 'Download PDF';
+          pdfDownloadLink.type = 'application/pdf';
+          iframe.insertAdjacentElement('afterend', pdfDownloadLink);
+        }
       } else {
         new Error(event.data?.error?.message);
       }
