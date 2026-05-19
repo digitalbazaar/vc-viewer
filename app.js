@@ -99,5 +99,25 @@ window.app = createApp({
   },
   loadExampleCredential(event) {
     this.loadCredential(event.target.value);
+  },
+  setupMessaging(el) {
+    const iframe = el;
+    const loader = el.nextElementSibling;
+    // create a MessageChannel; transfer one port to the iframe
+    const channel = new MessageChannel();
+    // start message queue so messages won't be lost while iframe loads
+    channel.port1.start();
+    // handle `ready` message
+    channel.port1.onmessage = function(event) {
+      if(event.data?.ready) {
+        iframe.removeAttribute('hidden');
+        loader.setAttribute('hidden', 'hidden');
+      } else {
+        new Error(event.data?.error?.message);
+      }
+      channel.port1.onmessage = undefined;
+    };
+    // send "start" message; send `port2` to iframe for return communication
+    iframe.contentWindow.postMessage('start', '*', [channel.port2]);
   }
 }).mount();

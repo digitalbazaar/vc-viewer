@@ -57,7 +57,13 @@ SPDX-License-Identifier: BSD-3-Clause
           @click="currentTab = 'credential'">Filtered Credential</div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
-        <iframe sandbox="allow-scripts allow-modals" :srcdoc="shimCode()" style="width: 100%; border: none;"></iframe>
+        <iframe sandbox="allow-scripts allow-modals"
+          hidden
+          :srcdoc="shimCode()"
+          @load="setupMessaging($el)"
+          style="width: 100%; border: none;"></iframe>
+        <!-- loader shown until the above iframe is ready -->
+        <div class="ui placeholder"><div class="image"></div></div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
         <div class="ui form">
