@@ -1,5 +1,5 @@
 <!--
-Copyright 2025 Digital Bazaar, Inc.
+Copyright 2025-2026 Digital Bazaar, Inc.
 
 SPDX-License-Identifier: BSD-3-Clause
 -->
@@ -7,9 +7,15 @@ SPDX-License-Identifier: BSD-3-Clause
 <html>
   <head>
     <title>Credential Viewer</title>
-    <meta http-equiv="content-security-policy" content="frame-src 'none'">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.0/semantic.min.css" integrity="sha512-PwhgdrueUt7iVICnZMjYcbiLalCztrVfzUIYXekIK8hZu4DQP141GrKh6fUHmNERWi4bGdBXIZqtBZnsSzHEMg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.1.0/mustache.min.js" integrity="sha512-HYiNpwSxYuji84SQbCU5m9kHEsRqwWypXgJMBtbRSumlx1iBB6QaxgEBZHSHEGM+fKyCX/3Kb5V5jeVXm0OglQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "@digitalbazaar/vc-html-renderer": "./vendor/vc-html-renderer/index.js"
+      }
+    }
+    </script>
     <script type="module">
       import './app.js';
     </script>
@@ -57,7 +63,10 @@ SPDX-License-Identifier: BSD-3-Clause
           @click="currentTab = 'credential'">Filtered Credential</div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'rendered' }">
-        <iframe sandbox="allow-scripts allow-modals" :srcdoc="shimCode()" style="width: 100%; border: none;"></iframe>
+        <!-- before -->
+        <!-- <iframe sandbox="allow-scripts allow-modals" :srcdoc="shimCode()" style="width: 100%; border: none;"></iframe> -->
+        <!-- after -->
+        <div class="vc-html-render-mount" style="width: 100%;" @vue:mounted="renderInto($el)"></div>
       </div>
       <div class="ui bottom attached tab segment" :class="{ active: currentTab == 'code' }">
         <div class="ui form">
@@ -108,7 +117,10 @@ SPDX-License-Identifier: BSD-3-Clause
         <div v-scope="SVGViewer({idx, credential: store.credential})" @vue:mounted="mounted"></div>
       </div>
       <div class="column" v-else-if="renderMethod.type === 'TemplateRenderMethod' && renderMethod.renderSuite === 'html'">
-        <div v-scope="HTMLViewer({template: renderMethod?.template, credential: store.credential, pointers: renderMethod.renderProperty})"></div>
+        <!-- before -->
+        <!--  <div v-scope="HTMLViewer({template: renderMethod?.template, credential: store.credential, pointers: renderMethod.renderProperty})"></div>  -->
+        <!-- after -->
+        <div v-scope="HTMLViewer({renderMethod, credential: store.credential})"></div>
       </div>
       <div class="column" v-else>
         <div v-text="'No viewer available for render method type: ' + renderMethod.type"></div>
